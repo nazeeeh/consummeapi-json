@@ -1,28 +1,108 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+    <b-container class="control">
+      <b-row>
+        <b-col class="red">
+          <div class="input-button">
+            <input placeholder="Enter a name" type="text" v-model="newuser"><span><b-button  @click="addNewUser" variant="info">ADD</b-button></span>
+          </div>
+        </b-col>
+        <b-col class="blue">
+          <div class="unordered-list">
+            <ul class="list-group listings">
+            <b-list-group-item href="#" variant="secondary">List of Users</b-list-group-item>
+             <li class="list-group-item" v-for="(user, index) in users" :key="index">{{user.name}}
+            <span @click="deleteUser(user)" class="delete-button">x</span></li>
+        </ul>
+          </div>
+          
+      </b-col>
+   
+  </b-row>
+
+
+    </b-container>
+
+    
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  components: {},
+
+  data(){
+    return {
+      users: [],
+      //   {
+      //     name: 'Janet',
+      //     age: 30
+      // },
+      // {
+      //     name: 'Husseini',
+      //     age: 39
+      // }
+      
+      newuser: null,
+      userSelected: false
+    }
+  },
+
+    methods: {
+      addNewUser(){
+      this.users.push({name: this.newuser});
+      this.newuser = ""
+      console.log(this.newuser)
+      },
+
+      deleteUser(user){
+        this.userSelected = this.users.indexOf(user);
+        this.users.splice(this.userSelected, 1)
+
+      }
+      
+    },
+    async created(){
+
+        //Get all users by making a get request to /users
+        let fetchUsers = await axios.get("https://jsonplaceholder.typicode.com/users");
+
+       console.log(fetchUsers);
+       this.users = fetchUsers.data;
+
   }
 }
+
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+<style scoped>
+.input-button{
+  margin-top: 4em ;
+  margin-left: 1em;
+}
+.delete-button{
+  float: right;
+  color: rgb(252, 7, 7);
+  width: 10%;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  border-radius: 50%;
+  font-weight: bolder;
+  background-color: black;
+}
+.listings:hover{
+  cursor: pointer;
+}
+
+.unordered-list{
+  margin-top: 50px;
+}
+.control{
+  width: 50%;
+  
+  box-shadow: 0 15px 30px rgba(90, 110, 100, 0.7);
 }
 </style>
